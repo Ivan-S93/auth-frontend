@@ -1,16 +1,43 @@
-# React + Vite
+# 🛡️ Auth Frontend - Módulo Central de Autenticación (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interfaz web moderna, responsiva e institucional desarrollada con **React**, **Vite** y **Tailwind CSS**. Este proyecto actúa como la capa cliente desacoplada que consume los servicios de autenticación y autorización del microservicio `auth-service` (Spring Boot + PostgreSQL).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Propósito del Proyecto
 
-## React Compiler
+Servir como portal centralizado de inicio de sesión para los sistemas institucionales (como el sistema HIS, monitores de quirófano y llamador de turnos), gestionando de manera segura la sesión del usuario basada en **JSON Web Tokens (JWT)**, sus **roles** asignados y los **servicios hospitalarios** a los que tiene acceso.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tecnologías Utilizadas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **React 18+ / 19** - Librería para la interfaz de usuario.
+* **Vite** - Herramienta de compilación y empaquetado rápido.
+* **Tailwind CSS (v4)** - Framework de diseño utilitario para estilos e interfaz adaptativa.
+* **Axios** - Cliente HTTP para peticiones REST e interceptores de seguridad.
+* **React Router DOM** - Enrutamiento dinámico y protección de rutas según roles.
+* **ESLint** - Control de calidad de código y detección de errores de sintaxis.
+
+---
+
+## 📁 Estructura del Proyecto
+
+```text
+auth-frontend/
+├── src/
+│   ├── api/
+│   │   └── axios.js          # Instancia centralizada de Axios con interceptor Bearer Token
+│   ├── context/
+│   │   └── AuthContext.jsx   # Estado global de autenticación, usuario, roles y JWT
+│   ├── components/
+│   │   └── ProtectedRoute.jsx# Componente de protección de rutas por autenticación/rol
+│   ├── pages/
+│   │   ├── Login.jsx         # Formulario de inicio de sesión estilizado con Tailwind CSS
+│   │   └── Dashboard.jsx     # Panel principal con información del usuario y accesos
+│   ├── App.jsx               # Rutas de la aplicación
+│   ├── index.css             # Configuración e importación global de Tailwind CSS
+│   └── main.jsx              # Punto de entrada de la aplicación React
+├── index.html
+├── vite.config.js            # Configuración de Vite y plugins (Tailwind, React)
+└── package.json

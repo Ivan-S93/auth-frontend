@@ -1,12 +1,26 @@
-function App() {
-  return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-      <div className="p-8 bg-slate-800 rounded-xl shadow-lg border border-slate-700 text-center">
-        <h1 className="text-3xl font-bold text-emerald-400 mb-2">¡Tailwind + React Listo! 🔥</h1>
-        <p className="text-slate-300">Modulo de Autenticación - Auth Frontend</p>
-      </div>
-    </div>
-  )
-}
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Ruta Pública */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Rutas Protegidas */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+
+          {/* Redirección por Defecto */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
