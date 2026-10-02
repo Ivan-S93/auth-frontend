@@ -59,7 +59,7 @@ export default function UserManagement() {
     }
   };
 
-  // Función para alternanr el estado activo/inactivo de un usuario
+  // Función para alternar el estado activo/inactivo de un usuario
   const handleToggleActive = async (id, currentStatus) => {
     try {
       await toggleUserStatus(id, !currentStatus);
@@ -69,34 +69,46 @@ export default function UserManagement() {
     }
   };
 
-
-  // Función para manejar cambios en los checkboxes de roles y servicios
-  const handleCheckboxChange = (category, value) => {
-    setFormData(prev => {
-      const list = prev[category];
-      const updatedList = list.includes(value)
-        ? list.filter(item => item !== value)
-        : [...list, value];
-      return { ...prev, [category]: updatedList };
-    });
-  };
-
-
   // Función para manejar el envío del formulario de creación de usuario
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createUser(formData);
+      // Construimos el payload de usuario
+      const payload = {
+        ci: formData.ci,
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        username: formData.username,
+        password: formData.password,
+        descripcion: formData.descripcion || '',
+        active: true,
+        // Convertimos a arreglos de objetos simples con su ID o Nombre
+        roles: formData.roles.map(r => {
+          const enc = rolesDisponibles.find(item => (item.nombre_rol || item.nombre) === r);
+          return enc ? enc : { nombre_rol: r };
+        }),
+        servicios: formData.servicios.map(s => {
+          const enc = serviciosDisponibles.find(item => (item.nombreServicio || item.nombre) === s);
+          return enc ? enc : { nombreServicio: s };
+        })
+      };
+
+      console.log("Payload enviado a /api/users:", payload);
+
+      await createUser(payload);
+
       setIsModalOpen(false);
       setFormData({
         ci: '', nombre: '', apellido: '', username: '', password: '',
         descripcion: '', roles: [], servicios: []
       });
-      // Recargar la tabla con el nuevo usuario
+
       const updatedUsers = await getUsers();
       setUsers(updatedUsers);
+
     } catch (err) {
-      alert(err.response?.data?.message || 'Error al guardar el usuario.');
+      console.error("Detalle del error devuelto por Spring Boot:", err.response?.data);
+      alert("Error 400 al guardar: " + JSON.stringify(err.response?.data || "Revisa los campos"));
     }
   };
 
@@ -162,10 +174,10 @@ export default function UserManagement() {
                   </div>
                 </td>
 
-                {/* Display de Servicios  */}
+                {/* Display de Servicios */}
                 <td className="p-3">
                   <div className="flex flex-wrap gap-1">
-                    {u.servicios && u.servicios.length > 0 ? (  // Verifica si hay servicios asignados
+                    {u.servicios && u.servicios.length > 0 ? (
                       u.servicios.map((s, i) => (
                         <span key={i} className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs">
                           🏥 {typeof s === 'object' ? (s.nombreServicio || s.nombre) : s}
@@ -252,6 +264,20 @@ export default function UserManagement() {
                   className="w-full border border-slate-300 p-2 rounded-lg text-sm"
                   value={formData.password}
                   onChange={e => setFormData({ ...formData, password: e.target.value })}
+                />
+              </div>
+
+              {/* AQUÍ SE AGREGÓ EL CAMPO DE DESCRIPCIÓN (OPCIONAL) */}
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">
+                  Descripción / Observaciones <span className="text-slate-400 font-normal">(Opcional)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  className="w-full border border-slate-300 p-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="Ej. Personal contratado para área de guardia nocturna..."
+                  value={formData.descripcion}
+                  onChange={e => setFormData({ ...formData, descripcion: e.target.value })}
                 />
               </div>
 
